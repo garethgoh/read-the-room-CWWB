@@ -2,5 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+
 * { box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+:root {
+  /* CoreWeave blacks */
+  --navy:   #080A0C;
+  --navy-2: #0F1215;
+  --navy-3: #171B1F;
+  --navy-4: #1E2328;
+
+  /* CoreWeave electric accent — blue-green */
+  --cw-accent:       #00C2FF;
+  --cw-accent-dim:   #00C2FF18;
+  --cw-accent-ring:  #00C2FF35;
+  --cw-accent-glow:  0 0 20px #00C2FF22;
+
+  /* Borders */
+  --border:       #1E2328;
+  --border-light: #161A1E;
+
+  /* Text */
+  --text-primary:   #F0F6FC;
+  --text-secondary: #8B949E;
+  --text-tertiary:  #3D4550;
+
+  /* Persona accents — kept distinct from CW accent */
+  --malik:  #10B981;
+  --diana:  #F59E0B;
+  --carter: #3B82F6;
+  --paul:   #8B5CF6;
+
+  /* Score colors */
+  --score-high: #10B981;
+  --score-mid:  #F59E0B;
+  --score-low:  #F85149;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--navy);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: rgba(0,194,255,0.2); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--navy-4); border-radius: 2px; }

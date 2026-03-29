@@ -1,174 +1,105 @@
 "use client"
-
 import { useState } from "react"
 import Link from "next/link"
 import { PERSONAS } from "@/lib/personas"
-import PersonaCard from "@/components/PersonaCard"
-
+const AVATAR_COLORS = { malik: "#10B981", diana: "#F59E0B", carter: "#3B82F6", paul: "#8B5CF6" }
+function Avatar({ persona, size = 32 }) {
+  const color = AVATAR_COLORS[persona.id] || "#888"
+  return <div style={{ width: size, height: size, borderRadius: "50%", background: color + "18", border: `1.5px solid ${color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ fontSize: size * 0.36, fontWeight: 600, color }}>{persona.name[0]}</span></div>
+}
+function ScoreRing({ score }) {
+  const color = score >= 70 ? "#10B981" : score >= 45 ? "#F59E0B" : "#EF4444"
+  const r = 28, c = 2 * Math.PI * r, dash = (score / 100) * c
+  return <div style={{ position: "relative", width: 72, height: 72, flexShrink: 0 }}><svg width="72" height="72" style={{ transform: "rotate(-90deg)" }}><circle cx="36" cy="36" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4" /><circle cx="36" cy="36" r={r} fill="none" stroke={color} strokeWidth="4" strokeDasharray={`${dash} ${c}`} strokeLinecap="round" /></svg><div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 20, fontWeight: 600, color, lineHeight: 1 }}>{score}</span><span style={{ fontSize: 9, color: "#9CA3AF" }}>/ 100</span></div></div>
+}
 export default function ScorerPage() {
   const [persona, setPersona] = useState(null)
   const [pitch, setPitch] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState("")
-
+  const [versions, setVersions] = useState([])
   async function score() {
     if (!persona || !pitch.trim()) return
-    setLoading(true)
-    setError("")
-    setResult(null)
+    setLoading(true); setError(""); setResult(null)
     try {
-      const res = await fetch("/api/score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ personaId: persona.id, pitch }),
-      })
+      const res = await fetch("/api/score", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ personaId: persona.id, pitch }) })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
-      setResult(data)
-    } catch (e) {
-      setError(e.message)
-    } finally {
-      setLoading(false)
-    }
+      setResult(data); setVersions(v => [...v, data.score])
+    } catch (e) { setError(e.message) } finally { setLoading(false) }
   }
-
-  const scoreColor =
-    result?.score >= 70 ? "text-green-600" : result?.score >= 45 ? "text-amber-500" : "text-red-500"
-  const barColor =
-    result?.score >= 70 ? "bg-green-500" : result?.score >= 45 ? "bg-amber-400" : "bg-red-400"
-
+  const accent = persona ? (AVATAR_COLORS[persona.id] || "#111827") : "#111827"
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-gray-400 hover:text-gray-600 text-sm">← Home</Link>
-          <span className="text-gray-200">|</span>
-          <h1 className="font-medium text-gray-900 text-sm">Pitch Scorer</h1>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#F8F9FA", fontFamily: "system-ui, sans-serif" }}>
+      <header style={{ height: 52, borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", background: "#fff", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <Link href="/" style={{ fontSize: 12, color: "#9CA3AF", textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>Home
+          </Link>
+          <div style={{ width: 1, height: 16, background: "#E5E7EB" }} />
+          <span style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>Pitch Scorer</span>
         </div>
+        {result && <ScoreRing score={result.score} />}
       </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col overflow-y-auto">
-          <div className="p-4 border-b border-gray-200">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Personas</div>
+      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <aside style={{ width: 240, borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", overflow: "hidden", flexShrink: 0, background: "#fff" }}>
+          <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid #F3F4F6", fontSize: 10, fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.1em", textTransform: "uppercase" }}>Personas</div>
+          <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
+            {PERSONAS.map(p => {
+              const color = AVATAR_COLORS[p.id] || "#888"
+              const active = persona?.id === p.id
+              return <div key={p.id} onClick={() => { setPersona(p); setResult(null) }} style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer", marginBottom: 4, border: `1px solid ${active ? color + "40" : "transparent"}`, background: active ? color + "08" : "transparent" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}><Avatar persona={p} size={32} /><div><div style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>{p.name}</div><div style={{ fontSize: 11, color: "#6B7280" }}>{p.role}</div></div></div>
+                <div style={{ fontSize: 10, color: "#9CA3AF", fontStyle: "italic", paddingLeft: 42, lineHeight: 1.4 }}>"{p.opener}"</div>
+              </div>
+            })}
           </div>
-          <div className="p-2 flex-1">
-            {PERSONAS.map((p) => (
-              <PersonaCard
-                key={p.id}
-                persona={p}
-                active={persona?.id === p.id}
-                onClick={() => { setPersona(p); setResult(null) }}
-              />
-            ))}
-          </div>
+          {versions.length > 0 && <div style={{ borderTop: "1px solid #F3F4F6", padding: "12px 16px" }}>
+            <div style={{ fontSize: 10, color: "#9CA3AF", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Version history</div>
+            {versions.map((v, i) => <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}><span style={{ fontSize: 11, color: "#9CA3AF" }}>v{i+1}</span><span style={{ fontSize: 12, fontWeight: 500, color: v >= 70 ? "#10B981" : v >= 45 ? "#F59E0B" : "#EF4444" }}>{v}</span></div>)}
+          </div>}
         </aside>
-
-        {/* Main */}
-        <main className="flex-1 flex flex-col overflow-hidden">
-          {persona && (
-            <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-start justify-between">
-              <div>
-                <div className="font-medium text-gray-900">{persona.name} · {persona.role}</div>
-                <div className="text-sm text-gray-500">{persona.company}</div>
+        <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          {persona && <div style={{ padding: "14px 24px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}><Avatar persona={persona} size={38} /><div><div style={{ fontSize: 14, fontWeight: 500, color: "#111827" }}>{persona.name} · {persona.role}</div><div style={{ fontSize: 12, color: "#6B7280" }}>{persona.company}</div></div></div>
+          </div>}
+          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+            {!persona && <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 13, color: "#9CA3AF" }}>Select a persona to begin</span></div>}
+            {persona && !result && <div style={{ maxWidth: 640, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 12, padding: 16 }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: accent, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>Triggers</div>
+                {persona.triggers.map(t => <div key={t} style={{ display: "flex", gap: 8, fontSize: 12, color: "#4B5563", marginBottom: 8, lineHeight: 1.5 }}><span style={{ color: accent, flexShrink: 0 }}>+</span>{t}</div>)}
               </div>
-              {result && (
-                <div className="text-right">
-                  <div className={`text-3xl font-semibold ${scoreColor}`}>{result.score}</div>
-                  <div className="text-xs text-gray-400">resonance</div>
-                  <div className="w-20 h-1 bg-gray-100 rounded-full mt-1 ml-auto">
-                    <div className={`h-1 rounded-full ${barColor}`} style={{ width: `${result.score}%` }} />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          <div className="flex-1 overflow-y-auto p-6">
-            {!persona && (
-              <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                Select a persona from the sidebar to begin
+              <div style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 12, padding: 16 }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "#EF4444", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>Red flags</div>
+                {persona.redFlags.map(t => <div key={t} style={{ display: "flex", gap: 8, fontSize: 12, color: "#4B5563", marginBottom: 8, lineHeight: 1.5 }}><span style={{ color: "#EF4444", flexShrink: 0 }}>−</span>{t}</div>)}
               </div>
-            )}
-
-            {persona && !result && (
-              <div className="max-w-2xl">
-                {/* Triggers grid */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                    <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Triggers</div>
-                    {persona.triggers.map((t) => (
-                      <div key={t} className="flex gap-2 text-xs text-gray-600 mb-1.5">
-                        <span className="text-gray-300 mt-0.5">•</span>{t}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                    <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Red flags</div>
-                    {persona.redFlags.map((t) => (
-                      <div key={t} className="flex gap-2 text-xs text-gray-600 mb-1.5">
-                        <span className="text-red-300 mt-0.5">•</span>{t}
-                      </div>
-                    ))}
-                  </div>
+            </div>}
+            {result && <div style={{ maxWidth: 640 }}>
+              {[{ label: "Reaction", content: result.reaction, color: "#111827" }, { label: "What's missing", content: result.missing, color: "#4B5563" }, { label: "One thing that would make me act", content: result.oneThingToAct, color: accent }].map((item, i) => (
+                <div key={item.label} style={{ borderTop: i > 0 ? "1px solid #F3F4F6" : "none", paddingTop: i > 0 ? 20 : 0, marginTop: i > 0 ? 20 : 0, marginBottom: i === 0 ? 20 : 0 }}>
+                  <div style={{ fontSize: 10, fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>{item.label}</div>
+                  <p style={{ fontSize: 14, color: item.color, lineHeight: 1.7, margin: 0 }}>{item.content}</p>
                 </div>
-              </div>
-            )}
-
-            {result && (
-              <div className="max-w-2xl space-y-5">
-                <div>
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Reaction</div>
-                  <p className="text-sm text-gray-800 leading-relaxed">{result.reaction}</p>
+              ))}
+              {result.rewrite && <div style={{ borderTop: "1px solid #F3F4F6", paddingTop: 20, marginTop: 20 }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>Suggested rewrite</div>
+                <div style={{ background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 10, padding: 16 }}>
+                  <p style={{ fontSize: 13, color: "#4B5563", lineHeight: 1.7, margin: "0 0 10px", fontStyle: "italic" }}>{result.rewrite}</p>
+                  <button onClick={() => setPitch(result.rewrite)} style={{ fontSize: 12, color: accent, background: "transparent", border: "none", cursor: "pointer", padding: 0 }}>Use this version →</button>
                 </div>
-                <div className="border-t border-gray-100 pt-5">
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">What's missing</div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{result.missing}</p>
-                </div>
-                <div className="border-t border-gray-100 pt-5">
-                  <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">One thing that would make me act</div>
-                  <p className="text-sm text-blue-700 leading-relaxed">{result.oneThingToAct}</p>
-                </div>
-                {result.rewrite && (
-                  <div className="border-t border-gray-100 pt-5">
-                    <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Suggested rewrite</div>
-                    <p className="text-sm text-gray-600 leading-relaxed italic">{result.rewrite}</p>
-                    <button
-                      onClick={() => setPitch(result.rewrite)}
-                      className="mt-3 text-xs text-blue-600 hover:text-blue-800"
-                    >
-                      Use this version →
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+              </div>}
+            </div>}
           </div>
-
-          {/* Input area */}
-          {persona && (
-            <div className="border-t border-gray-200 bg-white p-4">
-              {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
-              <textarea
-                value={pitch}
-                onChange={(e) => setPitch(e.target.value)}
-                placeholder="Paste your pitch, launch message, or sales copy here..."
-                className="w-full text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 resize-none focus:outline-none focus:border-gray-300"
-                rows={4}
-              />
-              <div className="flex justify-end mt-2">
-                <button
-                  onClick={score}
-                  disabled={loading || !pitch.trim()}
-                  className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  {loading ? "Scoring..." : "Score it"}
-                </button>
-              </div>
+          {persona && <div style={{ borderTop: "1px solid #E5E7EB", padding: "16px 24px", background: "#fff", flexShrink: 0 }}>
+            {error && <div style={{ fontSize: 12, color: "#EF4444", marginBottom: 8 }}>{error}</div>}
+            <textarea value={pitch} onChange={e => setPitch(e.target.value)} placeholder={`Paste your pitch for ${persona.name}...`} style={{ width: "100%", background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 10, padding: "12px 14px", fontSize: 13, color: "#111827", fontFamily: "inherit", resize: "none", outline: "none", lineHeight: 1.6 }} rows={4} onFocus={e => e.target.style.borderColor = accent} onBlur={e => e.target.style.borderColor = "#E5E7EB"} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+              <span style={{ fontSize: 11, color: "#9CA3AF" }}>{pitch.length} chars</span>
+              <button onClick={score} disabled={loading || !pitch.trim()} style={{ padding: "8px 20px", background: loading || !pitch.trim() ? "#E5E7EB" : accent, color: loading || !pitch.trim() ? "#9CA3AF" : "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: loading || !pitch.trim() ? "not-allowed" : "pointer" }}>{loading ? "Scoring..." : "Score it"}</button>
             </div>
-          )}
+          </div>}
         </main>
       </div>
     </div>

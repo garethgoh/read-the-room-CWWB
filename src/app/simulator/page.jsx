@@ -1,10 +1,12 @@
 "use client"
-
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { PERSONAS, STAGES } from "@/lib/personas"
-import PersonaCard from "@/components/PersonaCard"
-
+const AVATAR_COLORS = { malik: "#10B981", diana: "#F59E0B", carter: "#3B82F6", paul: "#8B5CF6" }
+function Avatar({ persona, size = 30 }) {
+  const color = AVATAR_COLORS[persona.id] || "#888"
+  return <div style={{ width: size, height: size, borderRadius: "50%", background: color + "18", border: `1.5px solid ${color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ fontSize: size * 0.36, fontWeight: 600, color }}>{persona.name[0]}</span></div>
+}
 export default function SimulatorPage() {
   const [persona, setPersona] = useState(null)
   const [messages, setMessages] = useState([])
@@ -14,184 +16,104 @@ export default function SimulatorPage() {
   const [winProb, setWinProb] = useState(25)
   const [nextMove, setNextMove] = useState("")
   const bottomRef = useRef(null)
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, loading])
-
-  function startSim(p) {
-    setPersona(p)
-    setStage(0)
-    setWinProb(25)
-    setNextMove("")
-    setMessages([{ role: "assistant", content: p.opener }])
-  }
-
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages, loading])
+  function startSim(p) { setPersona(p); setStage(0); setWinProb(25); setNextMove(""); setMessages([]) }
   async function send() {
     if (!input.trim() || !persona || loading) return
     const userMsg = { role: "user", content: input.trim() }
     const newMessages = [...messages, userMsg]
-    setMessages(newMessages)
-    setInput("")
-    setLoading(true)
-
+    setMessages(newMessages); setInput(""); setLoading(true)
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          personaId: persona.id,
-          messages: newMessages,
-        }),
-      })
+      const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ personaId: persona.id, messages: newMessages }) })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }])
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply }])
       if (data.meta) {
         setStage(Math.min(5, Math.max(0, data.meta.stage ?? stage)))
         setWinProb(Math.min(100, Math.max(0, data.meta.winProb ?? winProb)))
         if (data.meta.nextMove) setNextMove(data.meta.nextMove)
       }
-    } catch (e) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "Error: " + e.message }])
-    } finally {
-      setLoading(false)
-    }
+    } catch (e) { setMessages(prev => [...prev, { role: "assistant", content: "Error: " + e.message }]) }
+    finally { setLoading(false) }
   }
-
-  function handleKey(e) {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() }
-  }
-
-  const probColor = winProb >= 60 ? "text-green-600" : winProb >= 35 ? "text-amber-500" : "text-red-500"
-
+  function handleKey(e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }
+  const accent = persona ? (AVATAR_COLORS[persona.id] || "#111827") : "#111827"
+  const probColor = winProb >= 60 ? "#10B981" : winProb >= 35 ? "#F59E0B" : "#EF4444"
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="text-gray-400 hover:text-gray-600 text-sm">← Home</Link>
-          <span className="text-gray-200">|</span>
-          <h1 className="font-medium text-gray-900 text-sm">Selling Simulator</h1>
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#F8F9FA", fontFamily: "system-ui, sans-serif" }}>
+      <header style={{ height: 52, borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", background: "#fff", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <Link href="/" style={{ fontSize: 12, color: "#9CA3AF", textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>Home
+          </Link>
+          <div style={{ width: 1, height: 16, background: "#E5E7EB" }} />
+          <span style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>Selling Simulator</span>
         </div>
         {persona && (
-          <div className="flex items-center gap-6 text-sm">
-            <div>
-              <span className="text-gray-400 text-xs uppercase tracking-wider mr-2">Stage</span>
-              <span className="font-medium text-gray-900">{STAGES[stage]}</span>
-            </div>
-            <div>
-              <span className="text-gray-400 text-xs uppercase tracking-wider mr-2">Win prob.</span>
-              <span className={`font-medium ${probColor}`}>{winProb}%</span>
-            </div>
-            {/* Stage dots */}
-            <div className="flex items-center gap-1.5">
-              {STAGES.map((s, i) => (
-                <div key={s} className="flex flex-col items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full transition-colors ${
-                    i < stage ? "bg-green-400" : i === stage ? "bg-blue-500" : "bg-gray-200"
-                  }`} />
-                </div>
-              ))}
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            <div style={{ textAlign: "right" }}><div style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Stage</div><div style={{ fontSize: 12, fontWeight: 500, color: "#111827" }}>{STAGES[stage]}</div></div>
+            <div style={{ textAlign: "right" }}><div style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.06em" }}>Win prob.</div><div style={{ fontSize: 12, fontWeight: 500, color: probColor }}>{winProb}%</div></div>
+            <div style={{ display: "flex", gap: 5 }}>{STAGES.map((st, i) => <div key={st} title={st} style={{ width: 8, height: 8, borderRadius: "50%", background: i < stage ? "#10B981" : i === stage ? accent : "#E5E7EB" }} />)}</div>
           </div>
         )}
       </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col overflow-y-auto">
-          <div className="p-4 border-b border-gray-200">
-            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Personas</div>
+      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <aside style={{ width: 240, borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", overflow: "hidden", flexShrink: 0, background: "#fff" }}>
+          <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid #F3F4F6", fontSize: 10, fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.1em", textTransform: "uppercase" }}>Personas</div>
+          <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
+            {PERSONAS.map(p => {
+              const color = AVATAR_COLORS[p.id] || "#888"
+              const active = persona?.id === p.id
+              return <div key={p.id} onClick={() => startSim(p)} style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer", marginBottom: 4, border: `1px solid ${active ? color + "40" : "transparent"}`, background: active ? color + "08" : "transparent" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}><Avatar persona={p} size={30} /><div><div style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>{p.name}</div><div style={{ fontSize: 11, color: "#6B7280" }}>{p.role}</div></div></div>
+                <div style={{ fontSize: 10, color: "#9CA3AF", fontStyle: "italic", paddingLeft: 40, lineHeight: 1.4 }}>"{p.opener}"</div>
+              </div>
+            })}
           </div>
-          <div className="p-2 flex-1">
-            {PERSONAS.map((p) => (
-              <PersonaCard
-                key={p.id}
-                persona={p}
-                active={persona?.id === p.id}
-                onClick={() => startSim(p)}
-              />
-            ))}
-          </div>
-          {persona && (
-            <div className="p-4 border-t border-gray-200">
-              <div className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Proof they trust</div>
-              {persona.proof.map((t) => (
-                <div key={t} className="text-xs text-gray-500 mb-1.5 flex gap-1.5">
-                  <span className="text-gray-300 mt-0.5 flex-shrink-0">•</span>{t}
-                </div>
-              ))}
-            </div>
-          )}
+          {persona && nextMove && <div style={{ borderTop: "1px solid #F3F4F6", padding: "12px 16px" }}><div style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Next best move</div><div style={{ fontSize: 12, color: accent, lineHeight: 1.5 }}>{nextMove}</div></div>}
+          {persona && <div style={{ borderTop: "1px solid #F3F4F6", padding: "12px 16px" }}><div style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>Proof they trust</div>{persona.proof.slice(0, 3).map(t => <div key={t} style={{ fontSize: 11, color: "#6B7280", marginBottom: 6, display: "flex", gap: 6, lineHeight: 1.4 }}><span style={{ color: accent, flexShrink: 0 }}>·</span>{t}</div>)}</div>}
         </aside>
-
-        {/* Chat */}
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           {!persona ? (
-            <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
-              Select a persona to start the simulation
-            </div>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 13, color: "#9CA3AF" }}>Select a persona to start the simulation</span></div>
           ) : (
             <>
-              {nextMove && (
-                <div className="bg-blue-50 border-b border-blue-100 px-6 py-2.5 flex items-start gap-2">
-                  <span className="text-xs font-medium text-blue-500 uppercase tracking-wider whitespace-nowrap mt-0.5">Next move</span>
-                  <span className="text-xs text-blue-700">{nextMove}</span>
-                </div>
-              )}
-
-              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
-                {messages.map((m, i) => (
-                  <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                    {m.role === "assistant" && (
-                      <div className="text-xs font-medium text-gray-400 mr-2 mt-2 whitespace-nowrap">
-                        {persona.name.split(" ")[0]}
-                      </div>
-                    )}
-                    <div className={`max-w-lg px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                      m.role === "user"
-                        ? "bg-blue-600 text-white rounded-br-sm"
-                        : "bg-white border border-gray-200 text-gray-800 rounded-bl-sm"
-                    }`}>
-                      {m.content}
+              <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
+                {messages.length === 0 && (
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ textAlign: "center", maxWidth: 300 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: accent + "18", border: `1.5px solid ${accent}40`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}><span style={{ fontSize: 18, fontWeight: 600, color: accent }}>{persona.name[0]}</span></div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: "#111827", marginBottom: 6 }}>You're talking to {persona.name}</div>
+                      <div style={{ fontSize: 12, color: "#6B7280", lineHeight: 1.6, marginBottom: 4 }}>{persona.role}</div>
+                      <div style={{ fontSize: 12, color: "#9CA3AF", fontStyle: "italic" }}>Send the first message to start.</div>
                     </div>
+                  </div>
+                )}
+                {messages.map((m, i) => (
+                  <div key={i} style={{ display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start", alignItems: "flex-end", gap: 8 }}>
+                    {m.role === "assistant" && <Avatar persona={persona} size={28} />}
+                    <div style={{ maxWidth: "65%", padding: "10px 14px", borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px", background: m.role === "user" ? accent : "#fff", color: m.role === "user" ? "#fff" : "#111827", fontSize: 13, lineHeight: 1.6, border: m.role === "assistant" ? "1px solid #E5E7EB" : "none" }}>{m.content}</div>
                   </div>
                 ))}
                 {loading && (
-                  <div className="flex justify-start">
-                    <div className="text-xs font-medium text-gray-400 mr-2 mt-2">{persona.name.split(" ")[0]}</div>
-                    <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1">
-                      {[0, 1, 2].map((i) => (
-                        <div key={i} className="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce"
-                          style={{ animationDelay: `${i * 0.15}s` }} />
-                      ))}
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 8 }}>
+                    <Avatar persona={persona} size={28} />
+                    <div style={{ padding: "10px 14px", borderRadius: "16px 16px 16px 4px", background: "#fff", border: "1px solid #E5E7EB", display: "flex", gap: 4, alignItems: "center" }}>
+                      {[0,1,2].map(i => <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: "#D1D5DB", animation: "bounce 1.2s infinite", animationDelay: `${i*0.15}s` }} />)}
                     </div>
                   </div>
                 )}
                 <div ref={bottomRef} />
               </div>
-
-              <div className="border-t border-gray-200 bg-white p-4 flex gap-3">
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKey}
-                  placeholder="Your message... (Enter to send)"
-                  className="flex-1 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 resize-none focus:outline-none focus:border-gray-300 min-h-[42px] max-h-24"
-                  rows={1}
-                />
-                <button
-                  onClick={send}
-                  disabled={loading || !input.trim()}
-                  className="px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors self-end"
-                >
-                  Send
-                </button>
+              <div style={{ borderTop: "1px solid #E5E7EB", padding: "12px 16px", display: "flex", gap: 10, alignItems: "flex-end", background: "#fff", flexShrink: 0 }}>
+                <textarea value={input} onChange={e => setInput(e.target.value)} onKeyDown={handleKey} placeholder="Your message... (Enter to send)" style={{ flex: 1, background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 10, padding: "9px 13px", fontSize: 13, color: "#111827", fontFamily: "inherit", resize: "none", outline: "none", lineHeight: 1.6, minHeight: 40, maxHeight: 100 }} rows={1} onFocus={e => e.target.style.borderColor = accent} onBlur={e => e.target.style.borderColor = "#E5E7EB"} />
+                <button onClick={send} disabled={loading || !input.trim()} style={{ padding: "9px 18px", background: loading || !input.trim() ? "#E5E7EB" : accent, color: loading || !input.trim() ? "#9CA3AF" : "#fff", border: "none", borderRadius: 10, fontSize: 13, fontWeight: 500, cursor: loading || !input.trim() ? "not-allowed" : "pointer", flexShrink: 0 }}>Send</button>
               </div>
             </>
           )}
         </main>
       </div>
+      <style>{`@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }`}</style>
     </div>
   )
 }
