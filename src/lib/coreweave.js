@@ -1,77 +1,141 @@
+export const CW_PERSONAS = [
+  {
+    id: "paul_cw",
+    name: "Paul",
+    role: "AI/ML Platform Engineer",
+    company: "AI/ML Platform · AI-native or enterprise",
+    tags: ["Infrastructure-focused", "OSS-leaning", "Cost-conscious", "Recommender"],
+    triggers: [
+      "High performance and scalability — GPU clusters that don't choke under load",
+      "Cost transparency and predictable pricing — a bill he can explain to finance",
+      "Open-source compatibility and vendor independence — no lock-in, portable workloads",
+      "Observability and cost guardrails — real-time spend visibility and budget alerts",
+      "Support quality — fast, competent help from engineers who understand his stack",
+    ],
+    redFlags: [
+      "Vendor lock-in with no clear exit path or open APIs",
+      "Surprise bills or opaque pricing that can't be forecasted",
+      "Can't integrate with existing OSS tools (PyTorch, Kubernetes, Slurm, etc.)",
+      "Slow or generic support — tickets that sit for days without a real engineer",
+      "Heavy managed stack that takes away control and flexibility",
+    ],
+    proof: [
+      "Concrete benchmarks at his scale — GPU utilization, goodput, container spin-up times",
+      "Customer proof from AI-native teams like his (Cursor, Mistral, Chai AI)",
+      "Transparent pricing calculator with real examples at different usage levels",
+      "Reference to open APIs, SUNK, and portability — no rewrites to leave",
+      "24/7 direct-to-expert support with named engineers, not ticket queues",
+    ],
+    opener: "Walk me through how you handle resource contention when multiple teams are competing for GPUs on the same cluster.",
+    simContext: "You are Paul, an AI/ML Platform Engineer at a tech company. You build and maintain the GPU infrastructure your ML teams run on. You are deeply skeptical of vendor pitches — you have been burned by lock-in, surprise bills, and support teams that could not help when things broke at 2am. You care about: OSS compatibility, cost transparency, performance at scale, and clean exit paths. You ask hard infrastructure questions and expect specific technical answers. Keep responses 2-3 sentences, technical and direct.",
+  },
+  {
+    id: "alice",
+    name: "Alice",
+    role: "Director of AI/ML Platform",
+    company: "VP / Head of Platform Engineering · AI-native or enterprise",
+    tags: ["Decision maker", "Platform owner", "Cost and compliance", "Strategic buyer"],
+    triggers: [
+      "Guaranteed capacity and scheduler efficiency — no queuing when customers expect real-time",
+      "Cost visibility and ROI proof — showback mechanisms she can bring to leadership",
+      "Developer experience — self-service, templates, and fast provisioning for her teams",
+      "Vendor financial stability and roadmap transparency — safe to bet on for 2-3 years",
+      "Professional services and hands-on SAs — get to value fast, stay engaged post-launch",
+    ],
+    redFlags: [
+      "Vendor lock-in that makes it painful to migrate workloads or swap components",
+      "Pricing that changes at renewal or cannot be forecasted with committed-use options",
+      "No clear roadmap or transparency about what is being deprecated",
+      "Promises flexibility but migration means costly rewrites",
+      "Support that does not understand her specific use case and regulatory context",
+    ],
+    proof: [
+      "Peer references from platform leaders at companies her size who can speak to real outcomes",
+      "MLPerf and SemiAnalysis Platinum rating — third-party validation she can show leadership",
+      "ARENA proving ground — test real workloads before committing, not just benchmarks",
+      "Mission Control and proactive node replacement — operational partnership not just rented boxes",
+      "Clear contract flexibility — scale up or pause without penalties or hidden lock-ins",
+    ],
+    opener: "Before we go further — what does your roadmap look like for the next 18 months, and how do you handle customers who need to migrate off your platform?",
+    simContext: "You are Alice, VP of Platform Engineering at an AI company. You own the AI platform end to end — compute, tooling, reliability, cost, and compliance. You have been burned by vendors who promised flexibility but delivered lock-in, and by pricing that spiraled during contract renewals. You evaluate vendors on roadmap stability, cost predictability, and whether they will be a genuine partner. You ask strategic questions and expect references from peers, not polished case studies. Keep responses 2-3 sentences, measured and direct.",
+  },
+  {
+    id: "cedric",
+    name: "Cedric",
+    role: "CEO / Founder",
+    company: "Founder-CEO · AI-native startup",
+    tags: ["Executive buyer", "Speed to market", "Cost pressure", "Board-driven"],
+    triggers: [
+      "Speed to market — infrastructure that lets his team ship competitive models before rivals",
+      "Cost efficiency — predictable compute spend he can defend to the board and investors",
+      "Access to latest hardware — GB200, GB300, Blackwell before competitors get it",
+      "Proven at scale — customer proof from companies like his that actually made it to production",
+      "A partner not a vendor — someone who will stay engaged through launches, not just at contract time",
+    ],
+    redFlags: [
+      "Compute costs that spiral and blow through runway without warning",
+      "Vendor that cannot deliver capacity when the team needs to scale for a launch",
+      "Security or compliance gaps that would kill enterprise customer deals",
+      "Integration complexity that slows down his engineering team",
+      "Vague pricing or contracts with hidden fees that surprise the board",
+    ],
+    proof: [
+      "Startup-scale customer stories — Mistral, Cursor, Chai AI — companies that scaled on CoreWeave",
+      "First access to GB200 and GB300 within weeks of availability — hardware edge matters",
+      "Flexible capacity plans — Spot for batch work, Flex Reservations for launch peaks",
+      "SemiAnalysis Platinum rating and MLPerf records — credibility he can show investors",
+      "24/7 direct support and proactive infrastructure monitoring — partner not a rented box",
+    ],
+    opener: "We are preparing for a major model launch in 90 days. What is your track record getting AI-native startups to production fast, and what does capacity commitment actually look like?",
+    simContext: "You are Cedric, CEO of an AI-native startup. You are under board pressure to ship competitive models faster than well-funded rivals while managing compute costs that could blow your runway. You care about: speed to production, hardware access, cost predictability, and whether this vendor will actually be there when things go wrong during a launch. You ask direct questions about capacity, pricing, and customer references. You have limited time and will cut conversations short if they feel like a pitch. Keep responses 2-3 sentences.",
+  },
+  {
+    id: "carter_cw",
+    name: "Carter",
+    role: "CTO / VP of AI",
+    company: "CTO / VP AI · AI-native or enterprise",
+    tags: ["Strategic buyer", "GPU-first", "Peer-driven", "Performance and governance"],
+    triggers: [
+      "Guaranteed high-performance GPU capacity — no queuing when training runs or endpoints need to scale",
+      "Transparent pricing with daily team-level spend visibility — budget he can plan and defend",
+      "Open-source compatibility and portability — not locked in, can mix CoreWeave with GCP or AWS",
+      "Peer proof from CTOs at companies he respects — references beat polished case studies",
+      "Capacity and SLA reliability — burst compute in minutes, named owner when something breaks",
+    ],
+    redFlags: [
+      "Cannot guarantee GPU availability when it matters most — mid-launch or during training pushes",
+      "Pricing surprises or lack of daily spend visibility by team",
+      "Vendor lock-in that makes it hard to stay multi-cloud",
+      "Support that does not understand AI workloads — slow response at 2am when production wobbles",
+      "Integration complexity with existing stack — assumes greenfield and does not work with legacy",
+    ],
+    proof: [
+      "MLPerf 2496-GPU record and SemiAnalysis Platinum — third-party proof at scale he can cite",
+      "CoreWeave track record: 8 of top 10 foundation model providers, 250K+ GPUs in production",
+      "SUNK and Mission Control — operational reliability story, not just hardware specs",
+      "Peer references from technical leaders who have run real workloads at scale",
+      "Flexible capacity tiers (Spot, Flex Reservations, On-Demand) — mix and match for the right cost profile",
+    ],
+    opener: "I have heard good things about CoreWeave from a couple of peers. But I want to understand the capacity story — what actually happens when 10 teams all need GPUs at the same time during a major training push?",
+    simContext: "You are Carter, CTO of an AI company. You set the technical vision, own the infrastructure roadmap, and make build-vs-buy decisions on AI infrastructure. You have heard about CoreWeave from peers and are doing your due diligence. You ask hard questions about capacity guarantees, pricing transparency, and operational reliability. You value peer proof over vendor marketing, and you want to understand real failure modes. You are direct and time-constrained. Keep responses 2-3 sentences.",
+  },
+]
+
 export const CW_RUBRIC = {
-  name: "CoreWeave",
-  description: "Score any pitch, email, or sales message against CoreWeave's GTM framework.",
-  dimensions: [
-    {
-      id: "problem_first",
-      label: "Problem-first framing",
-      description: "Does it lead with the prospect's pain before talking product? Best openers: 'What is costing your infra teams the most time today?' Not: 'CoreWeave is the leading AI cloud.'"
-    },
-    {
-      id: "proof_over_claims",
-      label: "Proof over claims",
-      description: "Does it use specific proof points — customer names, benchmark numbers, MLPerf records, SemiAnalysis Platinum rating — or just marketing assertions? Claims without proof land flat with technical buyers."
-    },
-    {
-      id: "right_pillar",
-      label: "Right pillar for the prospect",
-      description: "Does it speak to the pillar that matches the prospect's situation? Pace (speed to start, container spin-up, GB300 first), Performance (96% goodput, 20% more FLOPs, 2,496-GPU MLPerf), or Partnership (24/7 direct-to-expert, Mission Control, ARENA, proactive node replacement)."
-    },
-    {
-      id: "competitive_handling",
-      label: "Competitive handling",
-      description: "If competitors come up, does it redirect quickly to CW's story rather than dwelling on takedowns? Rule: don't volunteer competitive info, redirect as fast as possible."
-    },
-    {
-      id: "next_step",
-      label: "Clear next step",
-      description: "Does it end with a specific, low-friction next step — ARENA trial, SUNK demo, Dedicated Inference preview, architecture review? Vague closes lose deals."
-    }
+  thirdPartyProof: [
+    "SemiAnalysis ClusterMAX: Only Platinum-rated AI cloud provider (Nebius, Oracle, Azure = Gold)",
+    "MLPerf Training v5.0: 2,496-GPU record — 34x larger than next CSP submission",
+    "NVIDIA Exemplar Cloud: First to deploy GB200 and GB300, exceeded NVIDIA own MFU targets",
+    "47% better TCO vs general-purpose clouds over a typical 3-year project"
   ],
   customerProof: [
-    { customer: "Mistral AI", proof: "2.5x faster training on GB200 vs H200. 100% of models trained on CoreWeave. Months saved in development time." },
-    { customer: "Cursor", proof: "461 instances / 3,688 GPUs in production on B300. Production clusters live within weeks of hardware availability." },
-    { customer: "Göksu", proof: "Scaled from single node to 2,500 GPUs with no formal POC. Proactive node replacement before ticket was filed. Largest spot customer." },
+    { customer: "Mistral AI", proof: "2.5x faster training on GB200 vs H200. 100% of models trained on CoreWeave." },
+    { customer: "Cursor", proof: "461 instances / 3,688 GPUs in production on B300. Live within weeks of hardware availability." },
+    { customer: "Goksu", proof: "Scaled from single node to 2,500 GPUs with no formal POC. Largest spot customer." },
     { customer: "Cohere", proof: "7 GB/s per GPU data throughput via LOTA. Running across GCP and CoreWeave." },
     { customer: "IBM", proof: "80% faster model training." },
     { customer: "Databricks", proof: "20% more FLOPs per GPU per hour." },
     { customer: "Chai AI", proof: "8-10x faster container spin-up." },
     { customer: "Jane Street", proof: "24/7 direct-to-expert support." },
   ],
-  thirdPartyProof: [
-    "SemiAnalysis ClusterMAX: Only Platinum-rated AI cloud provider (Nebius, Oracle, Azure = Gold)",
-    "MLPerf Training v5.0: 2,496-GPU record — 34x larger than next CSP submission",
-    "NVIDIA Exemplar Cloud: First to deploy GB200 and GB300, exceeded NVIDIA's own MFU targets",
-    "47% better TCO vs general-purpose clouds over a typical 3-year project"
-  ],
-  scoringPrompt: `You are a CoreWeave GTM expert evaluating a sales pitch, email, or message against CoreWeave's selling framework.
-
-CoreWeave's three pillars:
-- PACE: First to deploy GB200 and GB300, 8-10x faster container spin-up (Chai AI), bare-metal provisioning in minutes, 40+ data centers
-- PERFORMANCE: 96% goodput, 20% more FLOPs/GPU/hr, 2,496-GPU MLPerf record (34x larger than next CSP), 43.7% lower failure rate, SemiAnalysis Platinum-only rating
-- PARTNERSHIP: 24/7 direct-to-expert support, Solutions Architects tune environments before launch, ARENA proving ground, Mission Control (1M+ data points/sec, proactive alerts), proactive node replacement before tickets are filed
-
-Key products to know: SUNK (Slurm on Kubernetes), LOTA (Local Object Transport Accelerator), ARENA, Dedicated Inference, Flex Reservations, Spot, Mission Control, CoreWeave Interconnect, W&B Agent
-
-Customer proof: Mistral (2.5x faster training), Cursor (3,688 GPUs on B300 in production), Göksu (0 to 2,500 GPUs no formal POC), Cohere (7 GB/s/GPU), IBM (80% faster training), Databricks (20% more FLOPs), Chai AI (8-10x faster container spin-up)
-
-Third-party validation: SemiAnalysis Platinum (only provider), MLPerf 2,496-GPU record, NVIDIA Exemplar Cloud
-
-GTM rules:
-1. Lead with prospect's problem, not product features
-2. Use specific proof (numbers, customer names, third-party ratings) not generic claims
-3. Match the pillar to the prospect's situation (pace vs performance vs partnership)
-4. Don't volunteer competitive info — redirect to CW's story fast
-5. End with a specific, low-friction next step (ARENA trial, SUNK demo, architecture review)
-
-Score this pitch and return ONLY valid JSON:
-{
-  "score": <0-100>,
-  "reaction": "<2 sentences: how a savvy technical buyer would react to this pitch>",
-  "missing": "<1-2 sentences: what's missing that would make it land harder>",
-  "oneThingToAct": "<1 sentence: the single change that would most improve this pitch>",
-  "rewrite": "<rewritten version of the pitch applying the GTM rules above, same length or shorter>",
-  "pillarMatch": "<which pillar this pitch is strongest on: pace / performance / partnership / unclear>",
-  "proofGap": "<which proof point or customer reference would strengthen this most>"
-}`
 }

@@ -2,12 +2,16 @@
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { PERSONAS, STAGES } from "@/lib/personas"
-const AVATAR_COLORS = { malik: "#10B981", diana: "#F59E0B", carter: "#3B82F6", paul: "#8B5CF6", sonia: "#EC4899" }
+import { CW_PERSONAS } from "@/lib/coreweave"
+const WB_COLORS = { malik: "#10B981", diana: "#F59E0B", carter: "#3B82F6", paul: "#8B5CF6", sonia: "#EC4899" }
+const CW_COLORS = { paul_cw: "#0EA5E9", alice: "#8B5CF6", cedric: "#F59E0B", carter_cw: "#3B82F6" }
+function getColor(persona) { return WB_COLORS[persona.id] || CW_COLORS[persona.id] || "#888" }
 function Avatar({ persona, size = 30 }) {
-  const color = AVATAR_COLORS[persona.id] || "#888"
+  const color = getColor(persona)
   return <div style={{ width: size, height: size, borderRadius: "50%", background: color + "18", border: `1.5px solid ${color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><span style={{ fontSize: size * 0.36, fontWeight: 600, color }}>{persona.name[0]}</span></div>
 }
 export default function SimulatorPage() {
+  const [mode, setMode] = useState("wb")
   const [persona, setPersona] = useState(null)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState("")
@@ -17,6 +21,7 @@ export default function SimulatorPage() {
   const [nextMove, setNextMove] = useState("")
   const bottomRef = useRef(null)
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }) }, [messages, loading])
+  function switchMode(m) { setMode(m); setPersona(null); setMessages([]); setStage(0); setWinProb(25); setNextMove("") }
   function startSim(p) { setPersona(p); setStage(0); setWinProb(25); setNextMove(""); setMessages([]) }
   async function send() {
     if (!input.trim() || !persona || loading) return
@@ -37,8 +42,9 @@ export default function SimulatorPage() {
     finally { setLoading(false) }
   }
   function handleKey(e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }
-  const accent = persona ? (AVATAR_COLORS[persona.id] || "#111827") : "#111827"
+  const accent = persona ? getColor(persona) : "#111827"
   const probColor = winProb >= 60 ? "#10B981" : winProb >= 35 ? "#F59E0B" : "#EF4444"
+  const personas = mode === "wb" ? PERSONAS : CW_PERSONAS
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "#F8F9FA", fontFamily: "system-ui, sans-serif" }}>
       <header style={{ height: 52, borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", background: "#fff", flexShrink: 0 }}>
@@ -46,6 +52,10 @@ export default function SimulatorPage() {
           <Link href="/" style={{ fontSize: 12, color: "#9CA3AF", textDecoration: "none", display: "flex", alignItems: "center", gap: 6 }}><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>Home</Link>
           <div style={{ width: 1, height: 16, background: "#E5E7EB" }} />
           <span style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>Selling Simulator</span>
+          <div style={{ display: "flex", background: "#F3F4F6", borderRadius: 8, padding: 3, gap: 2, marginLeft: 8 }}>
+            <button onClick={() => switchMode("wb")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: mode === "wb" ? "#fff" : "transparent", color: mode === "wb" ? "#111827" : "#6B7280", boxShadow: mode === "wb" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>W&B</button>
+            <button onClick={() => switchMode("coreweave")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: mode === "coreweave" ? "#0D1117" : "transparent", color: mode === "coreweave" ? "#00C2FF" : "#6B7280", boxShadow: mode === "coreweave" ? "0 1px 3px rgba(0,0,0,0.2)" : "none" }}>CoreWeave</button>
+          </div>
         </div>
         {persona && (
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
@@ -59,8 +69,8 @@ export default function SimulatorPage() {
         <aside style={{ width: 240, borderRight: "1px solid #E5E7EB", display: "flex", flexDirection: "column", overflow: "hidden", flexShrink: 0, background: "#fff" }}>
           <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid #F3F4F6", fontSize: 10, fontWeight: 500, color: "#9CA3AF", letterSpacing: "0.1em", textTransform: "uppercase" }}>Personas</div>
           <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
-            {PERSONAS.map(p => {
-              const color = AVATAR_COLORS[p.id] || "#888"
+            {personas.map(p => {
+              const color = getColor(p)
               const active = persona?.id === p.id
               return <div key={p.id} onClick={() => startSim(p)} style={{ padding: "10px 12px", borderRadius: 10, cursor: "pointer", marginBottom: 4, border: `1px solid ${active ? color + "40" : "transparent"}`, background: active ? color + "08" : "transparent" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}><Avatar persona={p} size={30} /><div><div style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>{p.name}</div><div style={{ fontSize: 11, color: "#6B7280" }}>{p.role}</div></div></div>

@@ -1,9 +1,10 @@
 import { PERSONAS } from "@/lib/personas"
+import { CW_PERSONAS } from "@/lib/coreweave"
 
 export async function POST(req) {
   try {
     const { personaId, messages } = await req.json()
-    const persona = PERSONAS.find((p) => p.id === personaId)
+    const persona = [...PERSONAS, ...CW_PERSONAS].find(p => p.id === personaId)
     if (!persona) return Response.json({ error: "Persona not found" }, { status: 400 })
 
     const system = `${persona.simContext}
@@ -41,10 +42,7 @@ Adjust stage and winProb honestly based on how the conversation is going.`
     let reply = raw
 
     if (jsonMatch) {
-      try {
-        meta = JSON.parse(jsonMatch[0])
-        reply = raw.replace(jsonMatch[0], "").trim()
-      } catch (_) {}
+      try { meta = JSON.parse(jsonMatch[0]); reply = raw.replace(jsonMatch[0], "").trim() } catch (_) {}
     }
 
     return Response.json({ reply, meta })
