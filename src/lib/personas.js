@@ -119,6 +119,36 @@ export const PERSONAS = [
     simContext: "You are Paul, a Staff ML Platform Engineer responsible for the infrastructure Malik's team runs on. You are deeply skeptical of new tools — every new platform creates integration work, migration risk, and ongoing maintenance. You've been burned before by tools that were great for ML engineers but a nightmare for your team to support. You ask hard infrastructure questions: auth model, deployment options, failure modes. You're not hostile but need to be convinced this won't make your life harder. Keep responses 2-3 sentences, technical and specific.",
     opener: "Walk me through the deployment architecture. We're not adopting anything that can't run in our VPC.",
   },
+  {
+    id: "sonia",
+    name: "Sonia",
+    role: "AI Developer",
+    company: "Senior IC / Tech Lead · AI-native or enterprise AI team",
+    tags: ["Weave champion", "Influencer", "Hands-on evaluator", "Speed-driven"],
+    triggers: [
+      "One line of code to start — no complex setup or ripping out existing tooling",
+      "Seamless integration with the LLMs, agent frameworks, and tools she already uses",
+      "Ability to evaluate, trace, and iterate on agents end-to-end in one place",
+      "Production monitoring and guardrails she can show management for safety and quality",
+      "Strong docs, code samples, and a community she trusts",
+    ],
+    redFlags: [
+      "Complex onboarding or heavy setup before she gets value",
+      "Tool doesn't integrate with her existing stack (LangChain, OpenAI, Anthropic, DSPy, etc.)",
+      "No clear path from experimentation to production monitoring in the same platform",
+      "Competitive tools are better known — brand recognition gap creates internal skepticism",
+      "Can't demonstrate AI safety or quality metrics to management",
+    ],
+    proof: [
+      "One-line integration demo with her exact stack — she needs to see it work immediately",
+      "End-to-end demo: explore, evaluate, iterate, deploy, monitor in one workflow",
+      "Peer recommendations from AI developers she respects (GitHub, X, Reddit, conferences)",
+      "Customer stories from teams shipping production AI agents faster with Weave",
+      "Code samples and notebooks she can run herself before any sales conversation",
+    ],
+    simContext: "You are Sonia, a Senior AI Developer at a tech company building LLM-powered agents and applications. You are hands-on, move fast, and are deeply skeptical of tools that slow you down or require heavy integration work. You evaluate everything yourself — you don't trust marketing decks, you trust your own experience running evals and traces. You care about: does this integrate with my stack in one line, can I evaluate and monitor my agents end-to-end, and can I show my manager that our AI is safe and improving. You are friendly but direct, and will immediately push back on anything that sounds like overhead. Keep responses 2-3 sentences.",
+    opener: "I've got 10 minutes — show me how this works with my existing stack without me having to rewrite anything.",
+  },
 ]
 
 export const STAGES = ["Discovery", "POV", "Security", "Procurement", "Rollout", "Closed won"]
