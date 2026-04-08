@@ -53,8 +53,8 @@ export default function SimulatorPage() {
           <div style={{ width: 1, height: 16, background: "#E5E7EB" }} />
           <span style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>Selling Simulator</span>
           <div style={{ display: "flex", background: "#F3F4F6", borderRadius: 8, padding: 3, gap: 2, marginLeft: 8 }}>
-            <button onClick={() => switchMode("wb")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: mode === "wb" ? "#fff" : "transparent", color: mode === "wb" ? "#111827" : "#6B7280", boxShadow: mode === "wb" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}><img src="/wb-logo-dark.png" style={{ height: 12, display: "block" }} alt="W&B" /></button>
-            <button onClick={() => switchMode("coreweave")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: mode === "coreweave" ? "#0D1117" : "transparent", color: mode === "coreweave" ? "#00C2FF" : "#6B7280", boxShadow: mode === "coreweave" ? "0 1px 3px rgba(0,0,0,0.2)" : "none" }}><img src="/cw-logo.svg" style={{ height: 12, display: "block", filter: "brightness(0) invert(1)" }} alt="CoreWeave" /></button>
+            <button onClick={() => switchMode("wb")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: mode === "wb" ? "#fff" : "transparent", color: mode === "wb" ? "#111827" : "#6B7280", boxShadow: mode === "wb" ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>W&B</button>
+            <button onClick={() => switchMode("coreweave")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: mode === "coreweave" ? "#0D1117" : "transparent", color: mode === "coreweave" ? "#00C2FF" : "#6B7280", boxShadow: mode === "coreweave" ? "0 1px 3px rgba(0,0,0,0.2)" : "none" }}>CoreWeave</button>
           </div>
         </div>
         {persona && (
