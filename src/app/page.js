@@ -6,8 +6,6 @@ export default function Home() {
     <main style={{ minHeight: "100vh", background: "var(--navy)", display: "flex", flexDirection: "column" }}>
       <nav style={{ borderBottom: "1px solid var(--border-light)", padding: "0 40px", height: 52, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <img src="/cw-logo.svg" style={{ height: 22 }} alt="CoreWeave" />
-          <div style={{ width: 1, height: 16, background: "var(--border-light)" }} />
           <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>Read the Room</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -28,12 +26,7 @@ export default function Home() {
         <p style={{ fontSize: 16, color: "var(--text-secondary)", lineHeight: 1.65, maxWidth: 520, margin: "0 0 32px" }}>
           Score any marketing message or sales pitch against real buyer personas. Roleplay the conversation before you are actually in the room.
         </p>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ fontSize: 11, color: "var(--text-tertiary)" }}>Powered by</span>
-          <img src="/cw-logo.svg" style={{ height: 22, opacity: 0.8 }} alt="CoreWeave" />
-          <span style={{ fontSize: 11, color: "var(--text-tertiary)" }}>+</span>
-          <img src="/wb-logo-white.png" style={{ height: 22, opacity: 0.8 }} alt="W&B" />
-        </div>
+        
       </section>
       <section style={{ padding: "0 40px 56px", maxWidth: 860, margin: "0 auto", width: "100%" }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
