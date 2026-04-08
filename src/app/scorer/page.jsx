@@ -65,10 +65,6 @@ export default function ScorerPage() {
               </div>
             })}
           </div>
-          {isCW && <div style={{ borderTop: "1px solid #F3F4F6", padding: "12px 16px" }}>
-            <div style={{ fontSize: 10, color: "#9CA3AF", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>Customer proof</div>
-            {CW_RUBRIC.customerProof.slice(0, 4).map(c => <div key={c.customer} style={{ marginBottom: 6 }}><div style={{ fontSize: 11, fontWeight: 500, color: CW_BLUE }}>{c.customer}</div><div style={{ fontSize: 10, color: "#6B7280", lineHeight: 1.4 }}>{c.proof}</div></div>)}
-          </div>}
           {versions.length > 0 && <div style={{ borderTop: "1px solid #F3F4F6", padding: "12px 16px" }}>
             <div style={{ fontSize: 10, color: "#9CA3AF", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Version history</div>
             {versions.map((v, i) => <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}><span style={{ fontSize: 11, color: "#9CA3AF" }}>v{i+1}</span><span style={{ fontSize: 12, fontWeight: 500, color: v >= 70 ? "#10B981" : v >= 45 ? "#F59E0B" : "#EF4444" }}>{v}</span></div>)}
