@@ -46,7 +46,7 @@ export default function ScorerPage() {
           <div style={{ width: 1, height: 16, background: "#E5E7EB" }} />
           <span style={{ fontSize: 13, fontWeight: 500, color: "#111827" }}>Pitch Scorer</span>
           <div style={{ display: "flex", background: "#F3F4F6", borderRadius: 8, padding: 3, gap: 2, marginLeft: 8 }}>
-            <button onClick={() => switchMode("wb")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: !isCW ? "#fff" : "transparent", color: !isCW ? "#111827" : "#6B7280", boxShadow: !isCW ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>W&B</button>
+            <button onClick={() => switchMode("wb")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: !isCW ? "#F59E0B" : "transparent", color: !isCW ? "#fff" : "#6B7280", boxShadow: !isCW ? "0 1px 3px rgba(245,158,11,0.4)" : "none", border: !isCW ? "1px solid #F59E0B" : "none" }}>W&B</button>
             <button onClick={() => switchMode("coreweave")} style={{ padding: "4px 14px", fontSize: 12, fontWeight: 500, borderRadius: 6, border: "none", cursor: "pointer", background: isCW ? "#0D1117" : "transparent", color: isCW ? CW_BLUE : "#6B7280", boxShadow: isCW ? "0 1px 3px rgba(0,0,0,0.2)" : "none" }}>CoreWeave</button>
           </div>
         </div>
